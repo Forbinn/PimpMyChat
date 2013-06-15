@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 10:05:57 2013 vincent leroy
-** Last update Sat Jun 15 14:42:57 2013 vincent leroy
+** Last update Sat Jun 15 16:54:17 2013 vincent leroy
 */
 
 #ifndef X2P_H_
@@ -41,12 +41,14 @@ typedef enum e_state
 
 typedef struct s_data
 {
-  char *ip;
+  char ip[20];
   int sockfd;
   char id[BUFF_SIZE];
   char *username;
   char *mdp;
   t_state state;
+  char strNotif[BUFF_SIZE];
+  int notif;
 } t_data;
 
 /*
@@ -57,9 +59,9 @@ void inter_sig(int signum);
  * network.c
  */
 int connect_to_server(char *ip, char *port);
-void stop();
-int run(t_data *data);
-int check_readfs(fd_set *readfs, int sockfd, XML_Parser p);
+void init_network(t_data *data);
+void destroy_network();
+int readSocket(t_data *data);
 /*
  * ParseXML.c
  */
@@ -78,5 +80,6 @@ void send_deconnection(t_data *data);
 void send_newstate(t_data *data, char *state);
 void send_chatmessage(t_data *data, char *msg, char *dest);
 void send_normalmessage(t_data *data, char *subject, char *msg, char *dest);
+void send_createaccount(t_data *data);
 
 #endif /* !X2P_H_ */
