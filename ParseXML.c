@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 13:11:57 2013 vincent leroy
-** Last update Sun Jun 16 00:04:10 2013 vincent leroy
+** Last update Sun Jun 16 00:20:59 2013 vincent leroy
 */
 
 #include "x2p.h"
@@ -20,7 +20,10 @@ void XML_Start(void *userData, const XML_Char *name, const XML_Char **atts)
 
   data = userData;
   if (data->notif.notif == 1)
-    strcpy(strncat(data->notif.strNotif, name, BUFF_SIZE), "Error server reply: ");
+  {
+    strcpy(data->notif.strNotif, "Error server reply: ");
+    strncat(data->notif.strNotif, name, BUFF_SIZE);
+  }
 
   if (strcmp(name, "error") == 0)
     data->notif.notif = 1;
