@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 10:08:02 2013 vincent leroy
-** Last update Sat Jun 15 12:29:44 2013 vincent leroy
+** Last update Sat Jun 15 13:30:46 2013 vincent leroy
 */
 
 #include <netdb.h>
@@ -56,11 +56,16 @@ void stop()
   r = 0;
 }
 
-int run(int sockfd)
+int run(int sockfd, char *ip)
 {
   fd_set readfs;
+  XML_Parser p;
   int res;
 
+  p = XML_ParserCreate(NULL);
+  XML_SetElementHandler(p, &XML_Start, &XML_End);
+  XML_SetCharacterDataHandler(p, &XML_Character);
+  send_header(ip, sockfd);
   r = 1;
   while (r)
   {
@@ -71,29 +76,37 @@ int run(int sockfd)
     if ((res = select(sockfd + 1, &readfs, NULL, NULL, NULL)) == -1 && errno != EINTR)
       r = 0;
     else if (res > 0)
-      r = check_readfs(&readfs, sockfd);
+      r = check_readfs(&readfs, sockfd, p);
   }
+  XML_ParserFree(p);
+
   return res;
 }
 
-int check_readfs(fd_set *readfs, int sockfd)
+int check_readfs(fd_set *readfs, int sockfd, XML_Parser p)
 {
   t_msg msg;
+  int res;
+  void *buff;
 
   if (FD_ISSET(0, readfs))
   {
-    read(0, msg.msg, BUFF_SIZE);
-    printf("read fd 0: %s\n", msg.msg);
+    res = read(0, msg.msg, BUFF_SIZE);
+    write(sockfd, msg.msg, res);
   }
   if (FD_ISSET(sockfd, readfs))
   {
-    if (read(sockfd, msg.msg, BUFF_SIZE) <= 0)
+    buff = XML_GetBuffer(p, BUFF_SIZE);
+    if ((res = read(sockfd, buff, BUFF_SIZE)) > 0)
     {
-      printf("Deconnection\n");
-      return 0;
+      ((char*)buff)[res] = '\0';
+      printf("buff = %s\n", (char*)buff);
     }
-    else
-      printf("read sockfd %d: %s\n", sockfd, msg.msg);
+    else if (res == 0)
+      printf("Deconnection\n");
+    XML_ParseBuffer(p, res, res <= 0);
+
+    return res > 0;
   }
 
   return 1;

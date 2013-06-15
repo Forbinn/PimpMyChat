@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 10:05:40 2013 vincent leroy
-** Last update Sat Jun 15 12:32:28 2013 vincent leroy
+** Last update Sat Jun 15 13:30:56 2013 vincent leroy
 */
 
 #include <signal.h>
@@ -29,7 +29,7 @@ int main()
     return 1;
   }
 
-  if (run(sockfd) == -1)
+  if (run(sockfd, "10.18.207.43") == -1)
   {
     fprintf(stderr, "Error: %s\n", strerror(errno));
     return 1;
