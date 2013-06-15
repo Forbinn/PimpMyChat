@@ -25,14 +25,14 @@
 
 typedef struct s_gui
 {
+  WINDOW *current_win;
   WINDOW *wins[3];
   PANEL *pans[3];
   PANEL *top;
-  char current_buffer[BUF_SIZE];
-  int buffer_id;
 } t_gui;
 
 t_gui *init_gui(void);
+void read_gui();
 void update(t_gui *);
 void destroy(void);
 

@@ -11,19 +11,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "command.h"
 #include "gui.h"
 
-/*static WINDOW *create_chat_win()*/
-/*{*/
-/*WINDOW *w;*/
-
-/*w = newwin(HEIGHT, WIDTH, (LINES - HEIGHT) / 2, (COLS - WIDTH) / 2);*/
-/*scrollok(w, TRUE);*/
-/*box(w, 0, 0);*/
-/*return w;*/
-/*}*/
-
-static WINDOW *create_connection_win()
+static WINDOW *create_win()
 {
   WINDOW *w;
 
@@ -41,16 +32,13 @@ t_gui *init_gui(void)
   if ((gui = malloc(sizeof(t_gui))) == NULL)
     return (NULL);
 
-  memset(gui->current_buffer, 0, BUF_SIZE);
-  gui->buffer_id = 0;
-
   initscr();
   cbreak();
   /*noecho();*/
   keypad(stdscr, TRUE);
   /*raw();*/
 
-  gui->wins[0] = create_connection_win();
+  gui->wins[0] = create_win();
   /*gui->wins[1] = create_chat_win();*/
   /*gui->wins[2] = create_chat_win();*/
 
@@ -71,38 +59,35 @@ t_gui *init_gui(void)
   mvprintw(0, COLS / 2 - strlen(HEADER) / 2, "%s", HEADER);
 
   gui->top = gui->pans[0];
+  gui->current_win = panel_window(gui->top);
   update_panels();
   doupdate();
   return (gui);
 }
 
+void read_gui(t_gui *gui)
+{
+  char line[BUF_SIZE] = {0};
+  wgetstr(gui->current_win, line);
+
+  if (line[0] == '/')
+    handle_command(line);
+}
+
 void update(t_gui *gui)
 {
-  char line[4096] = {0};
-  WINDOW *current_window;
+  wmove(gui->current_win, LINES - 3, 1);
+  whline(gui->current_win, '-', WIDTH - 2);
+  wmove(gui->current_win, LINES - 2, 1);
+  wmove(gui->current_win, LINES - 2, 1);
+  wclrtoeol(gui->current_win);
 
-  while (1)
-  {
-    current_window = panel_window(gui->top);
-    wmove(current_window, LINES - 3, 1);
-    whline(current_window, '-', WIDTH - 2);
-    wmove(current_window, LINES - 2, 1);
-    wgetstr(current_window, line);
-    wmove(current_window, LINES - 2, 1);
-    wclrtoeol(current_window);
-
-    /*case KEY_TAB:*/
-    /*gui->top = (PANEL *) panel_userptr(gui->top);*/
-    /*top_panel(gui->top);*/
-    /*break;*/
-    update_panels();
-    doupdate();
-  }
+  update_panels();
+  doupdate();
 }
 
 void destroy(void)
 {
   //supprimer fenetres
-  //supprimer les formulaires
   endwin();
 }
