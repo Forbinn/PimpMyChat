@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 10:05:40 2013 vincent leroy
-** Last update Sat Jun 15 16:54:29 2013 vincent leroy
+** Last update Sat Jun 15 16:59:47 2013 vincent leroy
 */
 
 #include <signal.h>
@@ -22,6 +22,7 @@ void inter_sig(int signum)
 
 int main()
 {
+  t_gui *gui;
   t_data data;
   fd_set readfs;
   int ret;

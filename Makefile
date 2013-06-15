@@ -10,6 +10,7 @@
 
 SRC		= main.c \
 		  network.c \
+		  gui.c \
 		  ParseXML.c \
 		  identification.c \
 
@@ -21,6 +22,7 @@ CFLAGS		= -Wall -Wextra -W -Werror
 CFLAGS		+= -I$(LIST)
 
 LDFLAGS		+= -L$(LIST) -llist
+LDFLAGS		+= -lpanel -lncurses -lform
 LDFLAGS		+= -lexpat
 
 OBJ		= $(SRC:.c=.o)
