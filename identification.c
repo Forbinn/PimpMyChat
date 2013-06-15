@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 13:26:16 2013 vincent leroy
-** Last update Sun Jun 16 00:39:46 2013 vincent leroy
+** Last update Sun Jun 16 00:56:28 2013 vincent leroy
 */
 
 #include "x2p.h"
@@ -46,9 +46,9 @@ void send_newstate(t_data *data, char *msgState)
   dprintf(data->sockfd, "<presence><show>%s</show><status>%s</status></presence>", buff, msgState);
 }
 
-void send_chatmessage(t_data *data, char *msg, char *dest, char *resource)
+void send_chatmessage(t_data *data, char *msg, char *dest)
 {
-  dprintf(data->sockfd, "<message to='%s/%s' type='chat'><body>%s</body></message>", dest, resource, msg);
+  dprintf(data->sockfd, "<message to='%s' type='chat'><body>%s</body></message>", dest, msg);
 }
 
 void send_createaccount(t_data *data)
