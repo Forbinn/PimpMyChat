@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 10:05:40 2013 vincent leroy
-** Last update Sat Jun 15 16:59:47 2013 vincent leroy
+** Last update Sat Jun 15 18:48:46 2013 vincent leroy
 */
 
 #include <signal.h>
@@ -26,6 +26,7 @@ int main()
   t_data data;
   fd_set readfs;
   int ret;
+  struct timeval timeout;
 
   signal(SIGINT, &inter_sig);
   memset(&data, 0, sizeof(t_data));
@@ -51,12 +52,14 @@ int main()
     FD_ZERO(&readfs);
     FD_SET(0, &readfs);
     FD_SET(data.sockfd, &readfs);
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 500000;
 
-    if ((ret = select(data.sockfd + 1, &readfs, NULL, NULL, NULL)) == -1)
+    if ((ret = select(data.sockfd + 1, &readfs, NULL, NULL, &timeout)) == -1)
       run = 0;
     else
     {
-      if (FD_ISSET(0, &readfs))
+      if (FD_ISSET(0, &readfs) || ret == 0)
       {
 	if (read_gui(gui, &data) == -1)
 	{
