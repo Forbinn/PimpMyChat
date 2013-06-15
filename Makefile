@@ -5,12 +5,14 @@
 ## Login   <leroy_v@epitech.eu>
 ##
 ## Started on  Sat Jun 15 10:03:40 2013 vincent leroy
-## Last update Sat Jun 15 12:32:44 2013 vincent leroy
+## Last update Sat Jun 15 13:30:25 2013 vincent leroy
 ##
 
 SRC		= main.c \
 		  network.c \
-		  gui.c
+		  gui.c \
+		  ParseXML.c \
+		  identification.c \
 
 NAME		= x2p
 
@@ -21,6 +23,7 @@ CFLAGS		+= -I$(LIST)
 
 LDFLAGS		+= -L$(LIST) -llist
 LDFLAGS		+= -lpanel -lncurses -lform
+LDFLAGS		+= -lexpat
 
 OBJ		= $(SRC:.c=.o)
 

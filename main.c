@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 10:05:40 2013 vincent leroy
-** Last update Sat Jun 15 12:32:28 2013 vincent leroy
+** Last update Sat Jun 15 14:05:59 2013 vincent leroy
 */
 
 #include <signal.h>
@@ -21,16 +21,18 @@ void inter_sig(int signum)
 int main()
 {
   t_gui *gui;
-  int sockfd;
+  t_data data;
 
   signal(SIGINT, &inter_sig);
-  if ((sockfd = connect_to_server("10.18.207.43", "5222")) == -1)
+  memset(&data, 0, sizeof(t_data));
+  data.ip = "10.18.207.43";
+  if ((data.sockfd = connect_to_server(data.ip, "5222")) == -1)
   {
     fprintf(stderr, "Connection fail: %s\n", strerror(errno));
     return 1;
   }
 
-  if (run(sockfd) == -1)
+  if (run(&data) == -1)
   {
     fprintf(stderr, "Error: %s\n", strerror(errno));
     return 1;
