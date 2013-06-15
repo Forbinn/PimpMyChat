@@ -13,9 +13,11 @@ SRC		= main.c \
 
 NAME		= x2p
 
-CFLAGS		= -Wall -Wextra -W -Werror
+CFLAGS		= -Wall -Wextra -W -Werror \
+		  `pkg-config --cflags gtk+-3.0`
 
-LDFLAGS		= -lpthread
+LDFLAGS		= -lpthread \
+		  `pkg-config --libs gtk+-3.0`
 
 OBJ		= $(SRC:.c=.o)
 
