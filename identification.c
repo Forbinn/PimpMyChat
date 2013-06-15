@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 13:26:16 2013 vincent leroy
-** Last update Sat Jun 15 14:21:44 2013 vincent leroy
+** Last update Sat Jun 15 14:46:27 2013 vincent leroy
 */
 
 #include "x2p.h"
@@ -45,4 +45,29 @@ void send_password(t_data *data)
 void send_deconnection(t_data *data)
 {
   send_msg(data->sockfd, "</stream:stream>");
+}
+
+void send_newstate(t_data *data, char *msgState)
+{
+  char *buff;
+
+  switch (data->state)
+  {
+    case TYPE_AWAY: buff = "away"; break;
+    case TYPE_CHAT: buff = "chat"; break;
+    case TYPE_DND: buff = "dnd"; break;
+    case TYPE_XA: buff = "xa"; break;
+    default: buff = "";
+  }
+  send_msg(data->sockfd, make_msg("<presence><show>%s</show><status>%s</status></presence>", buff, msgState));
+}
+
+void send_chatmessage(t_data *data, char *msg, char *dest)
+{
+  send_msg(data->sockfd, make_msg("<message to='%s' type='chat'><body>%s</body></message>", dest, msg));
+}
+
+void send_normalmessage(t_data *data, char *subject, char *msg, char *dest)
+{
+  send_msg(data->sockfd, make_msg("<message to='%s' type='normal'><subject>%s</subject><body>%s</body></message>", dest, subject, msg));
 }

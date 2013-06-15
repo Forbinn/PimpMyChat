@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 10:05:57 2013 vincent leroy
-** Last update Sat Jun 15 14:21:30 2013 vincent leroy
+** Last update Sat Jun 15 14:42:57 2013 vincent leroy
 */
 
 #ifndef X2P_H_
@@ -29,6 +29,14 @@ typedef struct s_msg
   char msg[BUFF_SIZE];
 } t_msg;
 
+typedef enum e_state
+{
+  TYPE_AWAY	= 0,
+  TYPE_CHAT	= 1,
+  TYPE_DND	= 2,
+  TYPE_XA	= 3
+} t_state;
+
 typedef struct s_data
 {
   char *ip;
@@ -36,6 +44,7 @@ typedef struct s_data
   char id[BUFF_SIZE];
   char *username;
   char *mdp;
+  t_state state;
 } t_data;
 
 /*
@@ -64,5 +73,8 @@ void send_header(t_data *data);
 void send_identifiant(t_data *data);
 void send_password(t_data *data);
 void send_deconnection(t_data *data);
+void send_newstate(t_data *data, char *state);
+void send_chatmessage(t_data *data, char *msg, char *dest);
+void send_normalmessage(t_data *data, char *subject, char *msg, char *dest);
 
 #endif /* !X2P_H_ */
