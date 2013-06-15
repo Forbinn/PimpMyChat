@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 10:08:02 2013 vincent leroy
-** Last update Sat Jun 15 10:43:34 2013 vincent leroy
+** Last update Sat Jun 15 12:29:44 2013 vincent leroy
 */
 
 #include <netdb.h>
@@ -16,7 +16,7 @@
 
 #include "x2p.h"
 
-static int run;
+static int r;
 
 int connect_to_server(char *ip, char *port)
 {
@@ -51,47 +51,50 @@ int connect_to_server(char *ip, char *port)
   return sockfd;
 }
 
-pthread_t start_network(int *sockfd)
+void stop()
 {
-  pthread_t thread;
-
-  if (pthread_create(&thread, NULL, &run_network, sockfd) != 0)
-    return -1;
-  run = 1;
-  return thread;
+  r = 0;
 }
 
-void stop_network(pthread_t thread)
+int run(int sockfd)
 {
-  run = 0;
-  pthread_cancel(thread);
-  pthread_join(thread, NULL);
-}
+  fd_set readfs;
+  int res;
 
-void* run_network(void *data)
-{
-  int sockfd;
-  int nb_char;
-  char buff[BUFF_SIZE];
-
-  sockfd = *(int*)data;
-  while (run)
+  r = 1;
+  while (r)
   {
-    if ((nb_char = read(sockfd, buff, BUFF_SIZE)) < 0)
+    FD_ZERO(&readfs);
+    FD_SET(0, &readfs);
+    FD_SET(sockfd, &readfs);
+
+    if ((res = select(sockfd + 1, &readfs, NULL, NULL, NULL)) == -1 && errno != EINTR)
+      r = 0;
+    else if (res > 0)
+      r = check_readfs(&readfs, sockfd);
+  }
+  return res;
+}
+
+int check_readfs(fd_set *readfs, int sockfd)
+{
+  t_msg msg;
+
+  if (FD_ISSET(0, readfs))
+  {
+    read(0, msg.msg, BUFF_SIZE);
+    printf("read fd 0: %s\n", msg.msg);
+  }
+  if (FD_ISSET(sockfd, readfs))
+  {
+    if (read(sockfd, msg.msg, BUFF_SIZE) <= 0)
     {
-      fprintf(stderr, "Error when read: %s\n", strerror(errno));
-      run = 0;
-    }
-    else if (nb_char == 0)
-    {
-      printf("Deconnection from server\n");
-      run = 0;
+      printf("Deconnection\n");
+      return 0;
     }
     else
-    {
-      buff[nb_char] = '\0';
-      printf("message receive: %s\n", buff);
-    }
+      printf("read sockfd %d: %s\n", sockfd, msg.msg);
   }
-  return data;
+
+  return 1;
 }
