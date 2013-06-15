@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 13:26:16 2013 vincent leroy
-** Last update Sat Jun 15 14:46:27 2013 vincent leroy
+** Last update Sat Jun 15 16:54:49 2013 vincent leroy
 */
 
 #include "x2p.h"
@@ -70,4 +70,14 @@ void send_chatmessage(t_data *data, char *msg, char *dest)
 void send_normalmessage(t_data *data, char *subject, char *msg, char *dest)
 {
   send_msg(data->sockfd, make_msg("<message to='%s' type='normal'><subject>%s</subject><body>%s</body></message>", dest, subject, msg));
+}
+
+void send_createaccount(t_data *data)
+{
+  send_msg(data->sockfd, make_msg("<iq type='set' to='%s' id='%s' ><query xmlns='jabber:iq:register'><username>%s</username><password>%s</password></query></iq>", data->ip, data->id, data->username, data->mdp));
+}
+
+void send_removeaccount(t_data *data)
+{
+  send_msg(data->sockfd, make_msg("<iq type='set' to='%s' id='%s' ><query xmlns='jabber:iq:register'><remove/></query></iq>", data->ip, data->id));
 }
