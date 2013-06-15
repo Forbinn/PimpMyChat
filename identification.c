@@ -23,7 +23,8 @@ void send_identifiant(t_data *data)
 
 void send_password(t_data *data)
 {
-  dprintf(data->sockfd, "<iq type='set' id='%s' to='%s' ><query xmlns='jabber:iq:auth'><username>%s</username><password>%s</password></query></iq>", data->id, data->ip, data->username, data->mdp);
+  fprintf(stderr, "%s %s %s\n", data->ip, data->username, data->mdp);
+  dprintf(data->sockfd, "<iq type='set' id='%s' to='%s' ><query xmlns='jabber:iq:auth'><username>%s</username><password>%s</password><resource>maison</resource></query></iq>", data->id, data->ip, data->username, data->mdp);
 }
 
 void send_deconnection(t_data *data)

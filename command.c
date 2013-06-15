@@ -22,9 +22,8 @@ static t_cmd_ret connect_handler(char **args, t_data *data, t_gui *gui)
   /*data->username = strdup(args[1]);*/
   /*data->mdp = strdup(args[3]);*/
   /*init_connection(data);*/
-  strncpy(data->ip, "10.18.207.43", 20);
-  data->username = strdup("toto42");
-  data->mdp = strdup("42");
+  data->username = strdup("zizi4242");
+  data->mdp = strdup("zizi4242");
   init_connection(data);
   return (OK_CMD);
 }
@@ -42,7 +41,7 @@ static t_cmd_ret chat_handler(char **args, t_data *data, t_gui *gui)
 {
   (void) args;
   (void) data;
-  add_win(gui, "titi42@10.18.207.43");
+  add_win(gui, "penis4242@jabber.org");
   next_handler(NULL, data, gui);
   return (OK_CMD);
 }

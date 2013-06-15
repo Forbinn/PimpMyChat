@@ -30,7 +30,7 @@ int main()
 
   signal(SIGINT, &inter_sig);
   memset(&data, 0, sizeof(t_data));
-  strncpy(data.ip, "10.18.207.43", 20);
+  strncpy(data.ip, "jabber.org", 20);
   if ((data.sockfd = connect_to_server(data.ip, "5222")) == -1)
   {
     fprintf(stderr, "Connection fail: %s\n", strerror(errno));
