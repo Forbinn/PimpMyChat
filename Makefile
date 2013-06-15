@@ -5,19 +5,24 @@
 ## Login   <leroy_v@epitech.eu>
 ##
 ## Started on  Sat Jun 15 10:03:40 2013 vincent leroy
-## Last update Sat Jun 15 10:28:42 2013 vincent leroy
+## Last update Sat Jun 15 11:01:55 2013 vincent leroy
 ##
 
 SRC		= main.c \
-		  network.c
+		  network.c \
+		  queue.c
 
 NAME		= x2p
 
-CFLAGS		= -Wall -Wextra -W -Werror \
-		  `pkg-config --cflags gtk+-3.0`
+LIST		= list/
 
-LDFLAGS		= -lpthread \
-		  `pkg-config --libs gtk+-3.0`
+CFLAGS		= -Wall -Wextra -W -Werror
+CFLAGS		+= -I$(LIST)
+CFLAGS		+= `pkg-config --cflags gtk+-3.0`
+
+LDFLAGS		= -lpthread
+LDFLAGS		+= -L$(LIST) -llist
+LDFLAGS		+= `pkg-config --libs gtk+-3.0`
 
 OBJ		= $(SRC:.c=.o)
 
@@ -25,12 +30,18 @@ RM		= rm -f
 
 CC		= gcc
 
-all: $(NAME)
+MAKE		= make -C
+
+all: list $(NAME)
+
+list:
+	$(MAKE) $(LIST)
 
 $(NAME): $(OBJ)
 	$(CC) $(OBJ) $(LDFLAGS) -o $(NAME)
 
 clean:
+	$(MAKE) $(LIST) clean
 	$(RM) $(OBJ) *.swp *~ *#
 
 fclean: clean
@@ -38,4 +49,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all list clean fclean re
