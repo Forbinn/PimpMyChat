@@ -5,46 +5,30 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 13:26:16 2013 vincent leroy
-** Last update Sat Jun 15 16:54:49 2013 vincent leroy
+** Last update Sat Jun 15 17:49:38 2013 vincent leroy
 */
 
 #include "x2p.h"
 
-void send_msg(int fd, char *msg)
-{
-  write(fd, msg, strlen(msg));
-}
-
-char* make_msg(char *format, ...)
-{
-  static char buff[BUFF_SIZE];
-  va_list ap;
-
-  va_start(ap, format);
-  vsnprintf(buff, BUFF_SIZE, format, ap);
-  va_end(ap);
-  return buff;
-}
-
 void send_header(t_data *data)
 {
-  send_msg(data->sockfd, "<?xml version='1.0' encoding='UTF-8'?>");
-  send_msg(data->sockfd, make_msg("<stream:stream xmlns:stream='http://etherx.jabber.org/streams' version='1.0' xmlns='jabber:client' to='%s' >", data->ip));
+  dprintf(data->sockfd, "<?xml version='1.0' encoding='UTF-8'?>");
+  dprintf(data->sockfd, "<stream:stream xmlns:stream='http://etherx.jabber.org/streams' version='1.0' xmlns='jabber:client' to='%s' >", data->ip);
 }
 
 void send_identifiant(t_data *data)
 {
-  send_msg(data->sockfd, make_msg("<iq type='get' id='%s' to='%s' ><query xmlns='jabber:iq:auth'><username>%s</username></query></iq>", data->id, data->ip, data->username));
+  dprintf(data->sockfd, "<iq type='get' id='%s' to='%s' ><query xmlns='jabber:iq:auth'><username>%s</username></query></iq>", data->id, data->ip, data->username);
 }
 
 void send_password(t_data *data)
 {
-  send_msg(data->sockfd, make_msg("<iq type='set' id='%s' to='%s' ><query xmlns='jabber:iq:auth'><username>%s</username><password>%s</password></query></iq>", data->id, data->ip, data->username, data->mdp));
+  dprintf(data->sockfd, "<iq type='set' id='%s' to='%s' ><query xmlns='jabber:iq:auth'><username>%s</username><password>%s</password></query></iq>", data->id, data->ip, data->username, data->mdp);
 }
 
 void send_deconnection(t_data *data)
 {
-  send_msg(data->sockfd, "</stream:stream>");
+  dprintf(data->sockfd, "</stream:stream>");
 }
 
 void send_newstate(t_data *data, char *msgState)
@@ -59,25 +43,25 @@ void send_newstate(t_data *data, char *msgState)
     case TYPE_XA: buff = "xa"; break;
     default: buff = "";
   }
-  send_msg(data->sockfd, make_msg("<presence><show>%s</show><status>%s</status></presence>", buff, msgState));
+  dprintf(data->sockfd, "<presence><show>%s</show><status>%s</status></presence>", buff, msgState);
 }
 
 void send_chatmessage(t_data *data, char *msg, char *dest)
 {
-  send_msg(data->sockfd, make_msg("<message to='%s' type='chat'><body>%s</body></message>", dest, msg));
+  dprintf(data->sockfd, "<message to='%s' type='chat'><body>%s</body></message>", dest, msg);
 }
 
 void send_normalmessage(t_data *data, char *subject, char *msg, char *dest)
 {
-  send_msg(data->sockfd, make_msg("<message to='%s' type='normal'><subject>%s</subject><body>%s</body></message>", dest, subject, msg));
+  dprintf(data->sockfd, "<message to='%s' type='normal'><subject>%s</subject><body>%s</body></message>", dest, subject, msg);
 }
 
 void send_createaccount(t_data *data)
 {
-  send_msg(data->sockfd, make_msg("<iq type='set' to='%s' id='%s' ><query xmlns='jabber:iq:register'><username>%s</username><password>%s</password></query></iq>", data->ip, data->id, data->username, data->mdp));
+  dprintf(data->sockfd, "<iq type='set' to='%s' id='%s' ><query xmlns='jabber:iq:register'><username>%s</username><password>%s</password></query></iq>", data->ip, data->id, data->username, data->mdp);
 }
 
 void send_removeaccount(t_data *data)
 {
-  send_msg(data->sockfd, make_msg("<iq type='set' to='%s' id='%s' ><query xmlns='jabber:iq:register'><remove/></query></iq>", data->ip, data->id));
+  dprintf(data->sockfd, "<iq type='set' to='%s' id='%s' ><query xmlns='jabber:iq:register'><remove/></query></iq>", data->ip, data->id);
 }

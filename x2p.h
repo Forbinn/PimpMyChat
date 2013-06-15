@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 10:05:57 2013 vincent leroy
-** Last update Sat Jun 15 16:54:17 2013 vincent leroy
+** Last update Sat Jun 15 17:48:12 2013 vincent leroy
 */
 
 #ifndef X2P_H_
@@ -14,7 +14,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdarg.h>
 #include <errno.h>
 #include <unistd.h>
 #include <sys/select.h>
@@ -71,8 +70,6 @@ void XML_Character(void *userData, const XML_Char *s, int len);
 /*
  * identification.c
  */
-void send_msg(int fd, char *msg);
-char* make_msg(char *format, ...);
 void send_header(t_data *data);
 void send_identifiant(t_data *data);
 void send_password(t_data *data);
@@ -81,5 +78,6 @@ void send_newstate(t_data *data, char *state);
 void send_chatmessage(t_data *data, char *msg, char *dest);
 void send_normalmessage(t_data *data, char *subject, char *msg, char *dest);
 void send_createaccount(t_data *data);
+void send_removeaccount(t_data *data);
 
 #endif /* !X2P_H_ */
