@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 10:05:57 2013 vincent leroy
-** Last update Sat Jun 15 13:31:14 2013 vincent leroy
+** Last update Sat Jun 15 14:21:30 2013 vincent leroy
 */
 
 #ifndef X2P_H_
@@ -29,6 +29,15 @@ typedef struct s_msg
   char msg[BUFF_SIZE];
 } t_msg;
 
+typedef struct s_data
+{
+  char *ip;
+  int sockfd;
+  char id[BUFF_SIZE];
+  char *username;
+  char *mdp;
+} t_data;
+
 /*
  * main.c
  */
@@ -38,7 +47,7 @@ void inter_sig(int signum);
  */
 int connect_to_server(char *ip, char *port);
 void stop();
-int run(int sockfd, char *ip);
+int run(t_data *data);
 int check_readfs(fd_set *readfs, int sockfd, XML_Parser p);
 /*
  * ParseXML.c
@@ -51,6 +60,9 @@ void XML_Character(void *userData, const XML_Char *s, int len);
  */
 void send_msg(int fd, char *msg);
 char* make_msg(char *format, ...);
-void send_header(char *ip, int sockfd);
+void send_header(t_data *data);
+void send_identifiant(t_data *data);
+void send_password(t_data *data);
+void send_deconnection(t_data *data);
 
 #endif /* !X2P_H_ */

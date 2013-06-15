@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 10:08:02 2013 vincent leroy
-** Last update Sat Jun 15 13:30:46 2013 vincent leroy
+** Last update Sat Jun 15 14:02:25 2013 vincent leroy
 */
 
 #include <netdb.h>
@@ -56,7 +56,7 @@ void stop()
   r = 0;
 }
 
-int run(int sockfd, char *ip)
+int run(t_data *data)
 {
   fd_set readfs;
   XML_Parser p;
@@ -65,18 +65,19 @@ int run(int sockfd, char *ip)
   p = XML_ParserCreate(NULL);
   XML_SetElementHandler(p, &XML_Start, &XML_End);
   XML_SetCharacterDataHandler(p, &XML_Character);
-  send_header(ip, sockfd);
+  XML_SetUserData(p, data);
+  send_header(data);
   r = 1;
   while (r)
   {
     FD_ZERO(&readfs);
     FD_SET(0, &readfs);
-    FD_SET(sockfd, &readfs);
+    FD_SET(data->sockfd, &readfs);
 
-    if ((res = select(sockfd + 1, &readfs, NULL, NULL, NULL)) == -1 && errno != EINTR)
+    if ((res = select(data->sockfd + 1, &readfs, NULL, NULL, NULL)) == -1 && errno != EINTR)
       r = 0;
     else if (res > 0)
-      r = check_readfs(&readfs, sockfd, p);
+      r = check_readfs(&readfs, data->sockfd, p);
   }
   XML_ParserFree(p);
 
