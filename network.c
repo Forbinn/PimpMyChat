@@ -66,7 +66,10 @@ int readSocket(t_data *data)
 
   buff = XML_GetBuffer(p, BUFF_SIZE);
   if ((res = read(data->sockfd, buff, BUFF_SIZE)) > 0)
+  {
     ((char*)buff)[res] = '\0';
+    fprintf(stderr, "SERVER: %s\n", (char *) buff);
+  }
   else if (res == 0)
   {
     data->notif = 1;

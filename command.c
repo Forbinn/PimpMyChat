@@ -9,20 +9,29 @@
 */
 
 #include "command.h"
+#include "connection.h"
+
+static t_cmd_ret connect_handler(char **args, t_data *data)
+{
+  strncpy(data->ip, args[2], 20);
+  data->username = strdup(args[1]);
+  data->mdp = strdup(args[3]);
+  init_connection(data);
+  return (OK_CMD);
+}
 
 static t_cmd	commands[] =
 {
-  {"connect", "/connect login@domain password", 3, NULL}
+  {"connect", "/connect login domain password", 4, connect_handler}
 };
 
-int handle_command(char *cmd)
+t_cmd_ret handle_command(char *cmd, t_data *data)
 {
   size_t i;
   char *epur_cmd;
   char **args;
 
   epur_cmd = epur_str(cmd);
-  free(cmd);
   args = array_from_string(epur_cmd, " \t");
   for (i = 0; i < sizeof(commands) / sizeof(t_cmd); i++)
   {
@@ -30,10 +39,9 @@ int handle_command(char *cmd)
     {
       if (get_array_size(args) != commands[i].nb_params)
 	return (INVALID_CMD);
-      return commands[i].handler(args + 1, NULL);
+      return commands[i].handler(args, data);
     }
   }
-  free_string_array(args);
-  free(epur_cmd);
+  /*free_string_array(args);*/
   return (UNKNOWN_CMD);
 }

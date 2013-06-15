@@ -14,6 +14,7 @@
 #include <ncurses.h>
 #include <panel.h>
 #include <form.h>
+#include "x2p.h"
 
 #define BUF_SIZE 4096
 
@@ -32,8 +33,8 @@ typedef struct s_gui
 } t_gui;
 
 t_gui *init_gui(void);
-void read_gui();
+int read_gui(t_gui *, t_data *);
 void update(t_gui *);
-void destroy(void);
+void destroy_gui(void);
 
 #endif		/* !GUI_H_*/

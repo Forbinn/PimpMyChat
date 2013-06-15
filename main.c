@@ -10,7 +10,7 @@
 
 #include <signal.h>
 
-#include "x2p.h"
+#include "gui.h"
 
 static int run;
 
@@ -37,10 +37,17 @@ int main()
   }
 
   init_network(&data);
+  if ((gui = init_gui()) == NULL)
+  {
+    fprintf(stderr, "Failed to create GUI\n");
+    return (1);
+  }
 
   run = 1;
   while (run)
   {
+    update(gui);
+
     FD_ZERO(&readfs);
     FD_SET(0, &readfs);
     FD_SET(data.sockfd, &readfs);
@@ -51,6 +58,11 @@ int main()
     {
       if (FD_ISSET(0, &readfs))
       {
+	if (read_gui(gui, &data) == -1)
+	{
+	  run = 0;
+	  ret = -1;
+	}
       }
       if (FD_ISSET(data.sockfd, &readfs))
         if (readSocket(&data) == -1)
@@ -62,9 +74,9 @@ int main()
   }
 
   destroy_network();
+  destroy_gui();
 
   if (ret == -1)
     fprintf(stderr, "Error: %s\n", strerror(errno));
-
   return 0;
 }

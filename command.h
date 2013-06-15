@@ -22,6 +22,14 @@ typedef enum
   KO_CMD
 } t_cmd_ret;
 
+typedef enum
+{
+  NO_CONN,
+  USERNAME,
+  PASSWORD,
+  CONNECTED 
+} t_conn_state;
+
 typedef t_cmd_ret (*cmd_handler)(char **params, t_data *data);
 
 typedef struct s_cmd
@@ -32,6 +40,6 @@ typedef struct s_cmd
   cmd_handler handler;
 } t_cmd;
 
-int handle_command(char *);
+t_cmd_ret handle_command(char *, t_data *);
 
 #endif		/* !COMMAND_H_*/

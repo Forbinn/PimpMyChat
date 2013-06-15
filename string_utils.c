@@ -10,14 +10,8 @@
 
 #define _XOPEN_SOURCE 700
 
+#include <ctype.h>
 #include "string_utils.h"
-
-static int is_space(char c)
-{
-  if (c == ' ' || c == '\t')
-    return (1);
-  return (0);
-}
 
 char *epur_str(char *str)
 {
@@ -26,18 +20,18 @@ char *epur_str(char *str)
   int i;
   int j;
 
-  new = malloc(sizeof(char) * strlen(str) + 1);
+  new = malloc(strlen(str) + 1);
   if (new == NULL) return (NULL);
   begin = 1;
   for (i = 0, j = 0 ; str[i] ; )
   {
-    for ( ; str[i] && is_space(str[i]) ; i++);
+    for ( ; str[i] && isspace(str[i]) ; i++);
     if (!begin && str[i])
     {
       new[j] = ' ';
       j++;
     }
-    for (; str[i] && !is_space(str[i]); i++, j++)
+    for (; str[i] && !isspace(str[i]); i++, j++)
     {
       begin = 0;
       new[j] = str[i];

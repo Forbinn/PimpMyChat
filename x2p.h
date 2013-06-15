@@ -20,7 +20,6 @@
 #include <expat.h>
 
 #include "stdlist.h"
-#include "gui.h"
 #include "string_utils.h"
 
 #define BUFF_SIZE 4096

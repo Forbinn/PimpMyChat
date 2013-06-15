@@ -13,6 +13,9 @@ SRC		= main.c \
 		  gui.c \
 		  ParseXML.c \
 		  identification.c \
+		  command.c \
+		  string_utils.c \
+		  connection.c
 
 NAME		= x2p
 
@@ -50,4 +53,7 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all list clean fclean re
+debug: CFLAGS += -g
+debug: re
+
+.PHONY: all list clean fclean re debug

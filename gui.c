@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "command.h"
+#include "connection.h"
+#include "x2p.h"
 #include "gui.h"
 
 static WINDOW *create_win()
@@ -60,18 +62,36 @@ t_gui *init_gui(void)
 
   gui->top = gui->pans[0];
   gui->current_win = panel_window(gui->top);
+
+  wmove(gui->current_win, LINES - 2, 1);
+
   update_panels();
   doupdate();
   return (gui);
 }
 
-void read_gui(t_gui *gui)
+int read_gui(t_gui *gui, t_data *data)
 {
   char line[BUF_SIZE] = {0};
-  wgetstr(gui->current_win, line);
 
-  if (line[0] == '/')
-    handle_command(line);
+  fprintf(stderr, "IS REQUESTED: %d IS CONNECTED: %d\n", is_requested(), is_connected());
+  if (!is_requested() || is_connected())
+  {
+    wmove(gui->current_win, LINES - 2, 1);
+    if (wgetstr(gui->current_win, line) == ERR)
+      return -1;
+    if (line[0] == '/')
+    {
+      t_cmd_ret ret = handle_command(line + 1, data);
+      fprintf(stderr, "ERR CODE: %d\n", ret);
+    }
+  }
+  else
+  {
+    fprintf(stderr, "CONTINUE CONNECTION");
+    continue_connection();
+  }
+  return 0;
 }
 
 void update(t_gui *gui)
@@ -79,14 +99,13 @@ void update(t_gui *gui)
   wmove(gui->current_win, LINES - 3, 1);
   whline(gui->current_win, '-', WIDTH - 2);
   wmove(gui->current_win, LINES - 2, 1);
-  wmove(gui->current_win, LINES - 2, 1);
   wclrtoeol(gui->current_win);
 
   update_panels();
   doupdate();
 }
 
-void destroy(void)
+void destroy_gui(void)
 {
   //supprimer fenetres
   endwin();
