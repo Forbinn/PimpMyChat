@@ -18,7 +18,6 @@ static t_data *conn_data = NULL;
 void init_connection(t_data *data)
 {
   conn_data = data;
-  fprintf(stderr, "SEND HEADER\n");
   send_header(data);
   state = USERNAME;
 }
@@ -27,23 +26,26 @@ void continue_connection(void)
 {
   if (state == USERNAME)
   {
-    fprintf(stderr, "SEND USERNAME\n");
     send_identifiant(conn_data);
     state = PASSWORD;
-    return;
   }
-  if (state == PASSWORD)
+  else if (state == PASSWORD)
   {
-    fprintf(stderr, "SEND Password\n");
     send_password(conn_data);
     state = CONNECTED;
+  }
+  else if (state == CONNECTED)
+  {
+    conn_data->state = TYPE_CHAT;
+    send_newstate(conn_data, "YO GROS");
+    state = AUTHENTIFIED;
     conn_data = NULL;
   }
 }
 
-int is_connected(void)
+int is_authentified(void)
 {
-  return (state == CONNECTED);
+  return (state == AUTHENTIFIED);
 }
 
 int is_requested(void)

@@ -19,15 +19,9 @@
 #include <sys/select.h>
 #include <expat.h>
 
-#include "stdlist.h"
 #include "string_utils.h"
 
 #define BUFF_SIZE 4096
-
-typedef struct s_msg
-{
-  char msg[BUFF_SIZE];
-} t_msg;
 
 typedef enum e_state
 {

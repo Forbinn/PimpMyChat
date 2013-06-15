@@ -61,7 +61,7 @@ int main()
     {
       if (FD_ISSET(0, &readfs) || ret == 0)
       {
-	if (read_gui(gui, &data) == -1)
+	if (read_gui(gui, &data, ret) == -1)
 	{
 	  run = 0;
 	  ret = -1;
@@ -77,7 +77,7 @@ int main()
   }
 
   destroy_network();
-  destroy_gui();
+  destroy_gui(gui);
 
   if (ret == -1)
     fprintf(stderr, "Error: %s\n", strerror(errno));

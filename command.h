@@ -12,25 +12,19 @@
 # define	COMMAND_H_
 
 #include <string.h>
+#include "gui.h"
 #include "x2p.h"
 
 typedef enum
 {
   UNKNOWN_CMD,
   INVALID_CMD,
+  NOT_CONNECTED,
   OK_CMD,
   KO_CMD
 } t_cmd_ret;
 
-typedef enum
-{
-  NO_CONN,
-  USERNAME,
-  PASSWORD,
-  CONNECTED 
-} t_conn_state;
-
-typedef t_cmd_ret (*cmd_handler)(char **params, t_data *data);
+typedef t_cmd_ret (*cmd_handler)(char **, t_data *, t_gui *);
 
 typedef struct s_cmd
 {
@@ -38,8 +32,9 @@ typedef struct s_cmd
   char *usage;
   size_t nb_params;
   cmd_handler handler;
+  int connection_needed;
 } t_cmd;
 
-t_cmd_ret handle_command(char *, t_data *);
+t_cmd_ret handle_command(char *, t_data *, t_gui *);
 
 #endif		/* !COMMAND_H_*/

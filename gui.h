@@ -14,6 +14,7 @@
 #include <ncurses.h>
 #include <panel.h>
 #include <form.h>
+#include "stdlist.h"
 #include "x2p.h"
 
 #define BUF_SIZE 4096
@@ -24,17 +25,26 @@
 #define WIDTH COLS
 #define HEIGHT LINES
 
+typedef struct s_window
+{
+  WINDOW *win;
+  char receiver[BUF_SIZE];
+} t_window;
+
 typedef struct s_gui
 {
-  WINDOW *current_win;
-  WINDOW *wins[3];
-  PANEL *pans[3];
+  t_window *current_win;
+  t_list *wins;
+  t_list *pans;
   PANEL *top;
 } t_gui;
 
 t_gui *init_gui(void);
-int read_gui(t_gui *, t_data *);
+void add_win(t_gui *, char *);
+void switch_win(t_gui *gui);
+int read_gui(t_gui *, t_data *, int);
 void update(t_gui *);
-void destroy_gui(void);
+void destroy_gui(t_gui *);
+int compare_window(void *, void *);
 
 #endif		/* !GUI_H_*/

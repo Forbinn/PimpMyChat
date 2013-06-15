@@ -11,21 +11,50 @@
 #include "command.h"
 #include "connection.h"
 
-static t_cmd_ret connect_handler(char **args, t_data *data)
+static t_cmd_ret connect_handler(char **args, t_data *data, t_gui *gui)
 {
-  strncpy(data->ip, args[2], 20);
-  data->username = strdup(args[1]);
-  data->mdp = strdup(args[3]);
+  (void) args;
+  (void) data;
+  (void) gui;
+
+  /*(void) gui;*/
+  /*strncpy(data->ip, args[2], 20);*/
+  /*data->username = strdup(args[1]);*/
+  /*data->mdp = strdup(args[3]);*/
+  /*init_connection(data);*/
+  strncpy(data->ip, "10.18.207.43", 20);
+  data->username = strdup("toto42");
+  data->mdp = strdup("42");
   init_connection(data);
+  return (OK_CMD);
+}
+
+static t_cmd_ret next_handler(char **args, t_data *data, t_gui *gui)
+{
+  (void) args;
+  (void) data;
+
+  switch_win(gui);
+  return (OK_CMD);
+}
+
+static t_cmd_ret chat_handler(char **args, t_data *data, t_gui *gui)
+{
+  (void) args;
+  (void) data;
+  add_win(gui, "titi42@10.18.207.43");
+  next_handler(NULL, data, gui);
   return (OK_CMD);
 }
 
 static t_cmd	commands[] =
 {
-  {"connect", "/connect login domain password", 4, connect_handler}
+  {"connect", "/connect login domain password", 1, connect_handler, 0},
+  {"chat", "/chat login@domain", 1, chat_handler, 1},
+  {"next", "/next", 1, next_handler, 0}
 };
 
-t_cmd_ret handle_command(char *cmd, t_data *data)
+t_cmd_ret handle_command(char *cmd, t_data *data, t_gui *gui)
 {
   size_t i;
   char *epur_cmd;
@@ -39,7 +68,9 @@ t_cmd_ret handle_command(char *cmd, t_data *data)
     {
       if (get_array_size(args) != commands[i].nb_params)
 	return (INVALID_CMD);
-      return commands[i].handler(args, data);
+      if (commands[i].connection_needed && !is_authentified())
+	return (NOT_CONNECTED);
+      return commands[i].handler(args, data, gui);
     }
   }
   /*free_string_array(args);*/

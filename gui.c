@@ -16,15 +16,64 @@
 #include "x2p.h"
 #include "gui.h"
 
-static WINDOW *create_win()
+static void free_window(void *data)
 {
+  t_window *win = data;
+
+  delwin(win->win);
+  free(win);
+}
+
+int compare_window(void *data, void *data_ref)
+{
+  t_window *window = data;
+
+  return (window->win == data_ref) ? 0 : 1;
+}
+
+void add_win(t_gui *gui, char *receiver)
+{
+  t_window *window;
   WINDOW *w;
 
   w = newwin(HEIGHT, WIDTH, (LINES - HEIGHT) / 2, (COLS - WIDTH) / 2);
 
   scrollok(w, TRUE);
   box(w, 0, 0);
-  return w;
+  window = calloc(1, sizeof(t_window));
+  window->win = w;
+  if (receiver != NULL)
+  {
+    strncpy(window->receiver, receiver, BUF_SIZE);
+
+    wmove(w, 5, 5);
+    wprintw(w, "RECEIVER: %s\n", receiver);
+  }
+  else
+  {
+    wmove(w, 5, 10);
+    wprintw(w, "COUCOU JE SUIS LA PREMERE FENETRE");
+  }
+
+  list_push_back(gui->wins, window);
+  PANEL *p = new_panel(w);
+  set_panel_userptr(list_back(gui->pans), p);
+  set_panel_userptr(p, list_front(gui->pans));
+  list_push_back(gui->pans, p);
+}
+
+void switch_win(t_gui *gui)
+{
+  gui->top = panel_userptr(gui->top);
+  top_panel(gui->top);
+
+  int pos;
+  pos = list_search_data(gui->wins, panel_window(gui->top), &compare_window);
+  if (pos != -1)
+    gui->current_win = list_get_data(gui->wins, pos);
+  refresh();
+  update_panels();
+  doupdate();
 }
 
 t_gui *init_gui(void)
@@ -34,23 +83,25 @@ t_gui *init_gui(void)
   if ((gui = malloc(sizeof(t_gui))) == NULL)
     return (NULL);
 
+  gui->wins = list_create(NULL);
+  gui->pans = list_create(NULL);
+
   initscr();
   cbreak();
   /*noecho();*/
   keypad(stdscr, TRUE);
   /*raw();*/
 
-  gui->wins[0] = create_win();
+  add_win(gui, NULL);
+
   /*gui->wins[1] = create_chat_win();*/
   /*gui->wins[2] = create_chat_win();*/
 
-  /*mvwprintw(gui->wins[0], 1, 1, "tototo\n");*/
 
   /*int i;*/
   /*for(i = 0; i < 3; ++i)*/
   /*box(gui->wins[i], 0, 0);*/
 
-  gui->pans[0] = new_panel(gui->wins[0]);
   /*gui->pans[1] = new_panel(gui->wins[1]);*/
   /*gui->pans[2] = new_panel(gui->wins[2]);*/
 
@@ -60,35 +111,40 @@ t_gui *init_gui(void)
 
   mvprintw(0, COLS / 2 - strlen(HEADER) / 2, "%s", HEADER);
 
-  gui->top = gui->pans[0];
-  gui->current_win = panel_window(gui->top);
+  int pos;
 
-  wmove(gui->current_win, LINES - 2, 1);
+  gui->top = list_front(gui->pans);
+  pos = list_search_data(gui->wins, panel_window(gui->top), &compare_window);
+  if (pos != -1)
+    gui->current_win = list_get_data(gui->wins, pos);
+
+  wmove(gui->current_win->win, LINES - 2, 1);
 
   update_panels();
   doupdate();
   return (gui);
 }
 
-int read_gui(t_gui *gui, t_data *data)
+int read_gui(t_gui *gui, t_data *data, int ret)
 {
   char line[BUF_SIZE] = {0};
 
-  fprintf(stderr, "IS REQUESTED: %d IS CONNECTED: %d\n", is_requested(), is_connected());
-  if (!is_requested() || is_connected())
+  if (ret && (!is_requested() || is_authentified()))
   {
-    wmove(gui->current_win, LINES - 2, 1);
-    if (wgetstr(gui->current_win, line) == ERR)
+    wmove(gui->current_win->win, LINES - 2, 1);
+    if (wgetstr(gui->current_win->win, line) == ERR)
       return -1;
     if (line[0] == '/')
     {
-      t_cmd_ret ret = handle_command(line + 1, data);
-      fprintf(stderr, "ERR CODE: %d\n", ret);
+      handle_command(line + 1, data, gui);
+    }
+    else if (is_authentified() && gui->current_win != list_front(gui->wins))
+    {
+      send_chatmessage(data, line, gui->current_win->receiver);
     }
   }
   else
   {
-    fprintf(stderr, "CONTINUE CONNECTION");
     continue_connection();
   }
   return 0;
@@ -96,17 +152,18 @@ int read_gui(t_gui *gui, t_data *data)
 
 void update(t_gui *gui)
 {
-  wmove(gui->current_win, LINES - 3, 1);
-  whline(gui->current_win, '-', WIDTH - 2);
-  wmove(gui->current_win, LINES - 2, 1);
-  wclrtoeol(gui->current_win);
+  wmove(gui->current_win->win, LINES - 3, 1);
+  whline(gui->current_win->win, '-', WIDTH - 2);
+  wmove(gui->current_win->win, LINES - 2, 1);
+  wclrtoeol(gui->current_win->win);
 
   update_panels();
   doupdate();
 }
 
-void destroy_gui(void)
+void destroy_gui(t_gui *gui)
 {
-  //supprimer fenetres
+  list_delete(gui->pans, NULL, (void (*)(void *)) &del_panel);
+  list_delete(gui->wins, NULL, &free_window);
   endwin();
 }

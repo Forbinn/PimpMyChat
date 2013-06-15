@@ -68,7 +68,7 @@ int readSocket(t_data *data)
   if ((res = read(data->sockfd, buff, BUFF_SIZE)) > 0)
   {
     ((char*)buff)[res] = '\0';
-    fprintf(stderr, "SERVER: %s\n", (char *) buff);
+    fprintf(stderr, "RECEIVED: %s\n", (char *) buff);
   }
   else if (res == 0)
   {
