@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 10:05:40 2013 vincent leroy
-** Last update Sat Jun 15 18:48:46 2013 vincent leroy
+** Last update Sat Jun 15 22:45:12 2013 vincent leroy
 */
 
 #include <signal.h>
@@ -76,7 +76,7 @@ int main()
     }
   }
 
-  destroy_network();
+  destroy_network(&data);
   destroy_gui(gui);
 
   if (ret == -1)

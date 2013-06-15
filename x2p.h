@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 10:05:57 2013 vincent leroy
-** Last update Sat Jun 15 17:48:12 2013 vincent leroy
+** Last update Sat Jun 15 22:52:34 2013 vincent leroy
 */
 
 #ifndef X2P_H_
@@ -31,6 +31,13 @@ typedef enum e_state
   TYPE_XA	= 3
 } t_state;
 
+typedef struct s_notif
+{
+  int notif;
+  char strNotif[BUFF_SIZE];
+  char sender[BUFF_SIZE];
+} t_notif;
+
 typedef struct s_data
 {
   char ip[20];
@@ -39,8 +46,7 @@ typedef struct s_data
   char *username;
   char *mdp;
   t_state state;
-  char strNotif[BUFF_SIZE];
-  int notif;
+  t_notif notif;
 } t_data;
 
 /*
@@ -69,7 +75,6 @@ void send_password(t_data *data);
 void send_deconnection(t_data *data);
 void send_newstate(t_data *data, char *state);
 void send_chatmessage(t_data *data, char *msg, char *dest);
-void send_normalmessage(t_data *data, char *subject, char *msg, char *dest);
 void send_createaccount(t_data *data);
 void send_removeaccount(t_data *data);
 

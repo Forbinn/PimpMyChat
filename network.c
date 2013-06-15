@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 10:08:02 2013 vincent leroy
-** Last update Sat Jun 15 16:58:10 2013 vincent leroy
+** Last update Sat Jun 15 22:55:02 2013 vincent leroy
 */
 
 #include <netdb.h>
@@ -54,8 +54,9 @@ void init_network(t_data *data)
   XML_SetUserData(p, data);
 }
 
-void destroy_network()
+void destroy_network(t_data *data)
 {
+  close(data->sockfd);
   XML_ParserFree(p);
 }
 
@@ -72,8 +73,8 @@ int readSocket(t_data *data)
   }
   else if (res == 0)
   {
-    data->notif = 1;
-    strcpy(data->strNotif, "Deconnection");
+    data->notif.notif = 2;
+    strcpy(data->notif.strNotif, "Deconnection");
     close(data->sockfd);
   }
   XML_ParseBuffer(p, res, res <= 0);
