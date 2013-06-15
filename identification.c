@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 13:26:16 2013 vincent leroy
-** Last update Sat Jun 15 17:49:38 2013 vincent leroy
+** Last update Sun Jun 16 00:39:46 2013 vincent leroy
 */
 
 #include "x2p.h"
@@ -23,7 +23,6 @@ void send_identifiant(t_data *data)
 
 void send_password(t_data *data)
 {
-  fprintf(stderr, "%s %s %s\n", data->ip, data->username, data->mdp);
   dprintf(data->sockfd, "<iq type='set' id='%s' to='%s' ><query xmlns='jabber:iq:auth'><username>%s</username><password>%s</password><resource>maison</resource></query></iq>", data->id, data->ip, data->username, data->mdp);
 }
 
@@ -47,14 +46,9 @@ void send_newstate(t_data *data, char *msgState)
   dprintf(data->sockfd, "<presence><show>%s</show><status>%s</status></presence>", buff, msgState);
 }
 
-void send_chatmessage(t_data *data, char *msg, char *dest)
+void send_chatmessage(t_data *data, char *msg, char *dest, char *resource)
 {
-  dprintf(data->sockfd, "<message to='%s' type='chat'><body>%s</body></message>", dest, msg);
-}
-
-void send_normalmessage(t_data *data, char *subject, char *msg, char *dest)
-{
-  dprintf(data->sockfd, "<message to='%s' type='normal'><subject>%s</subject><body>%s</body></message>", dest, subject, msg);
+  dprintf(data->sockfd, "<message to='%s/%s' type='chat'><body>%s</body></message>", dest, resource, msg);
 }
 
 void send_createaccount(t_data *data)

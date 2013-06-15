@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 13:11:57 2013 vincent leroy
-** Last update Sun Jun 16 00:20:59 2013 vincent leroy
+** Last update Sun Jun 16 00:40:37 2013 vincent leroy
 */
 
 #include "x2p.h"
@@ -33,11 +33,9 @@ void XML_Start(void *userData, const XML_Char *name, const XML_Char **atts)
     data->notif.notif = 2;
   }
 
-  //fprintf(stderr, "Name: %s\n", name);
   i = 0;
   while (atts[i] != NULL)
   {
-    //fprintf(stderr, "Attr[%d] = %s\n", i, atts[i]);
     if (strcmp(atts[i], "id") == 0 && atts[i + 1] != NULL)
       strcpy(data->id, atts[i + 1]);
     else if (strcmp(atts[i], "from") == 0 && atts[i + 1] != NULL)
@@ -45,8 +43,10 @@ void XML_Start(void *userData, const XML_Char *name, const XML_Char **atts)
       if ((slash = strrchr(atts[i + 1], '/')) == NULL)
         strcpy(data->notif.sender, atts[i + 1]);
       else
+      {
         strncpy(data->notif.sender, atts[i + 1], slash - atts[i + 1]);
-      //fprintf(stderr, "sender = %s\n", data->notif.sender);
+        strncpy(data->notif.resource, slash + 1, BUFF_SIZE);
+      }
     }
     ++i;
   }
@@ -68,6 +68,5 @@ void XML_Character(void *userData, const XML_Char *s, int len)
   {
     strncpy(data->notif.strNotif, s, len);
     data->notif.strNotif[len] = 0;
-    //fprintf(stderr, "data->notif : %s\n", data->notif.strNotif);
   }
 }
