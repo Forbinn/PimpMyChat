@@ -19,6 +19,7 @@
 #include <sys/select.h>
 
 #include "stdlist.h"
+#include "gui.h"
 
 #define BUFF_SIZE 4096
 

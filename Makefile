@@ -10,6 +10,7 @@
 
 SRC		= main.c \
 		  network.c \
+		  gui.c
 
 NAME		= x2p
 
@@ -19,6 +20,7 @@ CFLAGS		= -Wall -Wextra -W -Werror
 CFLAGS		+= -I$(LIST)
 
 LDFLAGS		+= -L$(LIST) -llist
+LDFLAGS		+= -lpanel -lncurses -lform
 
 OBJ		= $(SRC:.c=.o)
 

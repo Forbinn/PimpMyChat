@@ -20,6 +20,7 @@ void inter_sig(int signum)
 
 int main()
 {
+  t_gui *gui;
   int sockfd;
 
   signal(SIGINT, &inter_sig);
@@ -35,5 +36,9 @@ int main()
     return 1;
   }
 
+  if ((gui = init_gui()) == NULL)
+    return 1; //erreur dans le chargement de l'interface
+  update(gui);
+  destroy();
   return 0;
 }
