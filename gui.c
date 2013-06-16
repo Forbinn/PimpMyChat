@@ -1,6 +1,6 @@
 /*
  ** gui.c for  in /home/nathan/prog/epitech/rush/pimpmychat/PimpMyChat
- ** 
+ *data->* 
  ** Made by 
  ** Login   <nathan@epitech.net>
  ** 
@@ -25,7 +25,43 @@ static void free_window(void *data)
   free(win);
 }
 
-static int compare_nick(void *data, void *data_ref)
+static void display_messages(t_gui *gui)
+{
+  int i;
+  char *msg;
+
+  for (i = 0; i < list_size(gui->current_win->msgs); i++)
+  {
+    msg = list_get_data(gui->current_win->msgs, i);
+    mvwprintw(gui->current_win->win, 2 + i, 2, "%s", msg);
+  }
+}
+
+static void push_message(char *msg, t_window *win)
+{
+  if (list_size(win->msgs) > LINES - 5)
+    list_pop_front(win->msgs, &free);
+  list_push_back(win->msgs, msg);
+}
+
+static void display_convers(t_gui *gui)
+{
+  int i;
+  t_window *w;
+  t_window *main_win = (t_window *) list_front(gui->wins);
+
+  wattron(main_win->win, COLOR_PAIR(2));
+  mvwprintw(main_win->win, 3, 2, "Current conversations:");
+  wattroff(main_win->win, COLOR_PAIR(2));
+  for (i = 0; i < list_size(gui->wins); i++)
+  {
+    w = list_get_data(gui->wins, i);
+    /*push_message(w->receiver, list_front(gui->wins));*/
+    mvwprintw(main_win->win, 4 + i, 2, "%s", w->receiver);
+  }
+}
+
+int compare_nick(void *data, void *data_ref)
 {
   t_window *window = data;
   char *nick = data_ref;
@@ -36,18 +72,6 @@ static int compare_nick(void *data, void *data_ref)
   return (strncmp(window->receiver, nick, c - nick));
 }
 
-static void display_messages(t_gui *gui)
-{
-  int i;
-  char *msg;
-
-  for (i = 0; i < list_size(gui->current_win->msgs); i++)
-  {
-    msg = list_get_data(gui->current_win->msgs, i);
-    mvwprintw(gui->current_win->win, 1 + i, 2, "%s", msg);
-  }
-}
-
 int compare_window(void *data, void *data_ref)
 {
   t_window *window = data;
@@ -55,29 +79,37 @@ int compare_window(void *data, void *data_ref)
   return (window->win == data_ref) ? 0 : 1;
 }
 
-void add_win(t_gui *gui, char *receiver)
+void add_win(t_gui *gui, char *receiver, int type)
 {
   t_window *window;
   WINDOW *w;
 
   w = newwin(HEIGHT, WIDTH, (LINES - HEIGHT) / 2, (COLS - WIDTH) / 2);
 
+
+  wbkgd(w, COLOR_PAIR(1));
+
   scrollok(w, TRUE);
   box(w, 0, 0);
   window = calloc(1, sizeof(t_window));
   window->win = w;
+  window->type = type;
   window->msgs = list_create(NULL);
   if (receiver != NULL)
   {
     strncpy(window->receiver, receiver, BUF_SIZE);
 
-    wmove(w, 5, 5);
-    wprintw(w, "RECEIVER: %s\n", receiver);
+    char header[BUF_SIZE];
+    int n = snprintf(header, BUF_SIZE, "RECEIVER: %s", receiver);
+    wmove(w, 1, COLS / 2 - n / 2);
+    wprintw(w, header, receiver);
   }
   else
   {
-    wmove(w, 5, 10);
-    wprintw(w, "COUCOU JE SUIS LA PREMERE FENETRE");
+    wattron(w, COLOR_PAIR(2));
+    wmove(w, 2, COLS / 2 - strlen("COUCOU JE SUIS LA FENETRE PRINCIPALE") / 2);
+    wprintw(w, "COUCOU JE SUIS LA FENETRE PRINCIPALE");
+    wattroff(w, COLOR_PAIR(2));
   }
 
   list_push_back(gui->wins, window);
@@ -98,7 +130,10 @@ void handle_notif(t_gui *gui, t_data *data)
     w = list_get_data(gui->wins, pos);
   else
   {
-    handle_command("chat", data, gui); //TODO: en dur!!
+    char cmd[BUF_SIZE];
+
+    snprintf(cmd, BUF_SIZE, "chat %s", data->notif.sender);
+    handle_command(cmd, data, gui);
     pos = list_search_data(gui->wins, data->notif.sender, &compare_nick);
     /*fprintf(stderr, "POS VALUE = %d\n", pos);*/
     if (pos != -1)
@@ -110,7 +145,7 @@ void handle_notif(t_gui *gui, t_data *data)
   char msg[BUF_SIZE];
 
   snprintf(msg, BUF_SIZE, "%s: %s", data->notif.sender, data->notif.strNotif);
-  list_push_back(w->msgs, strdup(msg));
+  push_message(strdup(msg), w);
 
   if (w == gui->current_win)
   {
@@ -129,8 +164,15 @@ void switch_win(t_gui *gui)
   int pos;
   pos = list_search_data(gui->wins, panel_window(gui->top), &compare_window);
   if (pos != -1)
+  {
     gui->current_win = list_get_data(gui->wins, pos);
-  display_messages(gui);
+    if (gui->current_win->type == CHAT_WINDOW)
+      display_messages(gui);
+    else if (gui->current_win->type == MAIN_WINDOW)
+    {
+      display_convers(gui);
+    }
+  }
   refresh();
   update_panels();
   doupdate();
@@ -152,7 +194,12 @@ t_gui *init_gui(void)
   keypad(stdscr, TRUE);
   /*raw();*/
 
-  add_win(gui, NULL);
+  start_color();			/* Start color 			*/
+  init_pair(1, COLOR_WHITE, COLOR_BLUE);
+  init_pair(2, COLOR_BLUE, COLOR_WHITE);
+  init_pair(3, COLOR_WHITE, COLOR_RED);
+
+  add_win(gui, NULL, MAIN_WINDOW);
 
   /*gui->wins[1] = create_chat_win();*/
   /*gui->wins[2] = create_chat_win();*/
@@ -212,8 +259,8 @@ int read_gui(t_gui *gui, t_data *data, int ret)
       {
 	char msg[BUF_SIZE];
 
-	snprintf(msg, BUF_SIZE, "Me: %s", line);
-	list_push_back(gui->current_win->msgs, strdup(msg));
+	snprintf(msg, BUF_SIZE, "%s: %s", data->username, line);
+	push_message(strdup(msg), gui->current_win);
 	send_chatmessage(data, line, gui->current_win->receiver);
 	display_messages(gui);
 	refresh();

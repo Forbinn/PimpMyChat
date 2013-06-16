@@ -11,6 +11,20 @@
 #include "command.h"
 #include "connection.h"
 
+extern int run;
+
+static t_cmd_ret quit_handler(char **args, t_data *data, t_gui *gui)
+{
+  (void) args;
+  (void) data;
+
+  if (gui->current_win->type == MAIN_WINDOW)
+  {
+    run = 0;
+  }
+  return (OK_CMD);
+}
+
 static t_cmd_ret connect_handler(char **args, t_data *data, t_gui *gui)
 {
   (void) args;
@@ -39,18 +53,23 @@ static t_cmd_ret next_handler(char **args, t_data *data, t_gui *gui)
 
 static t_cmd_ret chat_handler(char **args, t_data *data, t_gui *gui)
 {
-  (void) args;
-  (void) data;
-  add_win(gui, "penis4242@jabber.org");
-  next_handler(NULL, data, gui);
+  int pos;
+
+  pos = list_search_data(gui->wins, args[1], &compare_nick);
+  if (pos == -1)
+  {
+    add_win(gui, args[1], CHAT_WINDOW);
+    next_handler(NULL, data, gui);
+  }
   return (OK_CMD);
 }
 
 static t_cmd	commands[] =
 {
   {"connect", "/connect login domain password", 1, connect_handler, 0},
-  {"chat", "/chat login@domain", 1, chat_handler, 1},
-  {"next", "/next", 1, next_handler, 0}
+  {"chat", "/chat login@domain", 2, chat_handler, 1},
+  {"next", "/next", 1, next_handler, 0},
+  {"quit", "/quit", 1, quit_handler, 0}
 };
 
 t_cmd_ret handle_command(char *cmd, t_data *data, t_gui *gui)

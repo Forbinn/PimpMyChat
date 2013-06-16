@@ -12,7 +12,7 @@
 
 #include "gui.h"
 
-static int run;
+int run;
 
 void inter_sig(int signum)
 {
