@@ -64,6 +64,7 @@ void XML_Character(void *userData, const XML_Char *s, int len)
   if (data->notif.notif == 2 && body)
   {
     strncpy(data->notif.strNotif, s, len);
+    data->notif.strNotif[len] = 0;
     //fprintf(stderr, "data->notif : %s\n", data->notif.strNotif);
   }
 }

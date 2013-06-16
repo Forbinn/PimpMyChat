@@ -29,6 +29,7 @@ typedef struct s_window
 {
   WINDOW *win;
   char receiver[BUF_SIZE];
+  t_list *msgs;
 } t_window;
 
 typedef struct s_gui
@@ -41,6 +42,7 @@ typedef struct s_gui
 
 t_gui *init_gui(void);
 void add_win(t_gui *, char *);
+void handle_notif(t_gui *, t_data *);
 void switch_win(t_gui *gui);
 int read_gui(t_gui *, t_data *, int);
 void update(t_gui *);
