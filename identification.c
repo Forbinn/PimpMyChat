@@ -48,6 +48,7 @@ void send_newstate(t_data *data, char *msgState)
 
 void send_chatmessage(t_data *data, char *msg, char *dest)
 {
+  dprintf(2, "SENDED: <message to='%s' type='chat'><body>%s</body></message>\n", dest, msg);
   dprintf(data->sockfd, "<message to='%s' type='chat'><body>%s</body></message>", dest, msg);
 }
 

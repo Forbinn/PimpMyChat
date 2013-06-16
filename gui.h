@@ -46,7 +46,7 @@ void handle_notif(t_gui *, t_data *);
 void switch_win(t_gui *gui);
 int read_gui(t_gui *, t_data *, int);
 void update(t_gui *);
-void destroy_gui(t_gui *);
+void destroy_gui(t_data *, t_gui *);
 int compare_window(void *, void *);
 
 #endif		/* !GUI_H_*/

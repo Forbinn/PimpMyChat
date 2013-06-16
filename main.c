@@ -76,8 +76,8 @@ int main()
     }
   }
 
+  destroy_gui(&data, gui);
   destroy_network(&data);
-  destroy_gui(gui);
 
   if (ret == -1)
     fprintf(stderr, "Error: %s\n", strerror(errno));

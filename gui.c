@@ -29,8 +29,11 @@ static int compare_nick(void *data, void *data_ref)
 {
   t_window *window = data;
   char *nick = data_ref;
+  char *c;
 
-  return (strcmp(window->receiver, nick));
+  if ((c = strrchr(nick, '/')) == NULL)
+    return (strcmp(window->receiver, nick));
+  return (strncmp(window->receiver, nick, c - nick));
 }
 
 static void display_messages(t_gui *gui)
@@ -88,7 +91,7 @@ void handle_notif(t_gui *gui, t_data *data)
 {
   t_window *w;
 
-  fprintf(stderr, "HANDLE NOTIF FROM: [%s] [%s]\n", data->notif.sender, data->notif.strNotif);
+  /*fprintf(stderr, "HANDLE NOTIF FROM: [%s] [%s]\n", data->notif.sender, data->notif.strNotif);*/
   int pos;
   pos = list_search_data(gui->wins, data->notif.sender, &compare_nick);
   if (pos != -1)
@@ -97,7 +100,7 @@ void handle_notif(t_gui *gui, t_data *data)
   {
     handle_command("chat", data, gui); //TODO: en dur!!
     pos = list_search_data(gui->wins, data->notif.sender, &compare_nick);
-    fprintf(stderr, "POS VALUE = %d\n", pos);
+    /*fprintf(stderr, "POS VALUE = %d\n", pos);*/
     if (pos != -1)
       w = list_get_data(gui->wins, pos);
     else
@@ -203,6 +206,10 @@ int read_gui(t_gui *gui, t_data *data, int ret)
       else if (is_authentified() && gui->current_win != list_front(gui->wins))
       {
 	send_chatmessage(data, line, gui->current_win->receiver);
+	display_messages(gui);
+	refresh();
+	update_panels();
+	doupdate();
       }
     }
   }
@@ -224,9 +231,10 @@ void update(t_gui *gui)
   doupdate();
 }
 
-void destroy_gui(t_gui *gui)
+void destroy_gui(t_data *data, t_gui *gui)
 {
   list_delete(gui->pans, NULL, (void (*)(void *)) &del_panel);
   list_delete(gui->wins, NULL, &free_window);
   endwin();
+  send_deconnection(data);
 }
