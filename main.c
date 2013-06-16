@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Jun 15 10:05:40 2013 vincent leroy
-** Last update Sat Jun 15 22:45:12 2013 vincent leroy
+** Last update Sun Jun 16 11:21:00 2013 vincent leroy
 */
 
 #include <signal.h>
@@ -20,7 +20,7 @@ void inter_sig(int signum)
     run = 0;
 }
 
-int main()
+int main(int ac, char **av)
 {
   t_gui *gui;
   t_data data;
@@ -28,9 +28,15 @@ int main()
   int ret;
   struct timeval timeout;
 
+  if (ac < 2)
+  {
+    fprintf(stderr, "Usage: %s domain\n", av[0]);
+    return 1;
+  }
+
   signal(SIGINT, &inter_sig);
   memset(&data, 0, sizeof(t_data));
-  strncpy(data.ip, "jabber.org", 20);
+  strncpy(data.ip, av[1], 20);
   if ((data.sockfd = connect_to_server(data.ip, "5222")) == -1)
   {
     fprintf(stderr, "Connection fail: %s\n", strerror(errno));
