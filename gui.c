@@ -106,7 +106,12 @@ void handle_notif(t_gui *gui, t_data *data)
     else
       return;
   }
-  list_push_back(w->msgs, strdup(data->notif.strNotif));
+
+  char msg[BUF_SIZE];
+
+  snprintf(msg, BUF_SIZE, "%s: %s", data->notif.sender, data->notif.strNotif);
+  list_push_back(w->msgs, strdup(msg));
+
   if (w == gui->current_win)
   {
     display_messages(gui);
@@ -164,7 +169,7 @@ t_gui *init_gui(void)
   /*set_panel_userptr(gui->pans[1], gui->pans[2]);*/
   /*set_panel_userptr(gui->pans[2], gui->pans[0]);*/
 
-  mvprintw(0, COLS / 2 - strlen(HEADER) / 2, "%s", HEADER);
+  /*mvprintw(0, COLS / 2 - strlen(HEADER) / 2, "%s", HEADER);*/
 
   int pos;
 
@@ -173,7 +178,7 @@ t_gui *init_gui(void)
   if (pos != -1)
     gui->current_win = list_get_data(gui->wins, pos);
 
-  wmove(gui->current_win->win, LINES - 2, 1);
+  /*wmove(gui->current_win->win, LINES - 2, 1);*/
 
   update_panels();
   doupdate();
@@ -205,6 +210,10 @@ int read_gui(t_gui *gui, t_data *data, int ret)
       }
       else if (is_authentified() && gui->current_win != list_front(gui->wins))
       {
+	char msg[BUF_SIZE];
+
+	snprintf(msg, BUF_SIZE, "Me: %s", line);
+	list_push_back(gui->current_win->msgs, strdup(msg));
 	send_chatmessage(data, line, gui->current_win->receiver);
 	display_messages(gui);
 	refresh();
